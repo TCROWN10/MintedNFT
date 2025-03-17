@@ -2,7 +2,8 @@ import { Contract } from "ethers";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getReadOnlyProvider } from "../utils";
 import NFT_ABI from "../ABI/nft.json";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
+import { getEthersSigner } from "../config/wallet-connection/adapter";
 
 const appContext = createContext();
 
@@ -17,6 +18,7 @@ export const useAppContext = () => {
 
 export const AppProvider = ({ children }) => {
     const {address: userAddress, isConnected} = useAccount();
+    const wagmiConfig = useConfig()
     const [nextTokenId, setNextTokenId] = useState(null);
     const [maxSupply, setMaxSupply] = useState(null);
     const [baseTokenURI, setBaseTokenURI] = useState("");
@@ -130,6 +132,28 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    const transferNfts = async ( tokenId, reciever) => {
+        try {
+            const signer = await getEthersSigner(wagmiConfig);
+        if (!signer) throw new Error("Wallet not connected");
+            const contract = new Contract(
+                import.meta.env.VITE_NFT_CONTRACT_ADDRESS,
+                NFT_ABI,
+                signer
+            );
+    
+            const tx = contract.transferFrom(signer.getAddress(), reciever, tokenId);
+
+            await tx.wait()
+    
+            setUserNFTs((prev) => prev.filter((id) => id !== tokenId))
+
+        }catch(error){
+            console.log(error)
+        }
+
+    }
+
     return (
         <appContext.Provider
             value={{
@@ -139,6 +163,7 @@ export const AppProvider = ({ children }) => {
                 tokenMetaData,
                 mintPrice,
                 userNFTs,
+                transferNfts
             }}
         >
             {children}

@@ -20,7 +20,7 @@ const WalletConnection = () => {
             <Popover.Trigger>
                 <button>
                     <Flex align="center" gap="2">
-                        <span className="text-secondary">
+                        <span className="text-secondary cursor-pointer">
                             {shortenAddress(account.address)}
                         </span>
                         <Icon
@@ -30,29 +30,29 @@ const WalletConnection = () => {
                     </Flex>
                 </button>
             </Popover.Trigger>
-            <Popover.Content width="280px" className="!p-0 !px-4 shadow-lg">
+            <Popover.Content width="280px" className="!p-0 !px-4 shadow-lg cursor-pointer">
                 <a
                     className=""
                     href={`${supportedNetworks[0].blockExplorers.default.url}/address/${account.address}`}
                     target="_blank"
                     rel="noreferrer"
                 >
-                    <span className="flex items-center gap-4 w-full px-4 py-2">
+                    <span className="flex items-center gap-4 w-full cursor-pointer px-4 py-2">
                         <Icon icon="gridicons:external" className="w-6 h-6" />
                         <span>Explorer</span>
                     </span>
                 </a>
-                <button className="w-full flex gap-4 items-center p-4 text-primary rounded-md">
+                <button className="w-full flex gap-4 items-center p-4 cursor-pointer text-primary rounded-md">
                     <Icon icon="solar:copy-line-duotone" className="w-6 h-6" />
                     <span>Copy</span>
                 </button>
-                <button className="w-full flex gap-4 items-center p-4 text-primary rounded-md" onClick={() => navigate("/account")}>
+                <button className="w-full flex gap-4 items-center cursor-pointer p-4 text-primary rounded-md" onClick={() => navigate("/Account")}>
                 <Icon icon="famicons:wallet" className="w-6 h-6" />
                 <span>Account</span>
                 </button>
                 <button
                     onClick={disconnect}
-                    className="w-full flex gap-4 items-center p-4 text-primary rounded-md"
+                    className="w-full flex gap-4 items-center p-4 text-primary cursor-pointer rounded-md"
                 >
                     <Icon
                         icon="grommet-icons:power-shutdown"
