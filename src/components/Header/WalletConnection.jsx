@@ -25,7 +25,7 @@ const WalletConnection = () => {
                         </span>
                         <Icon
                             icon="radix-icons:caret-down"
-                            className="w-4 h-4 text-secondary"
+                            className="w-4 h-4 cursor-pointer text-secondary"
                         />
                     </Flex>
                 </button>

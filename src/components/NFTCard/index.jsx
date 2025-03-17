@@ -6,7 +6,20 @@ import { motion } from "framer-motion";
 
 const NFTCard = ({ metadata, mintPrice, tokenId, nextTokenId, mintNFT }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
   const isOwned = Number(nextTokenId) > tokenId;
+
+  const handleMint = async () => {
+    try {
+      setIsMinting(true);
+      console.log("Minting NFT:", tokenId);
+      await mintNFT();
+      setIsMinting(false);
+    } catch (error) {
+      console.error("Error minting NFT:", error);
+      setIsMinting(false);
+    }
+  };
 
   return (
     <motion.div
@@ -59,8 +72,8 @@ const NFTCard = ({ metadata, mintPrice, tokenId, nextTokenId, mintNFT }) => {
         </div>
 
         <button
-          disabled={Number(nextTokenId) !== tokenId}
-          onClick={mintNFT}
+          disabled={Number(nextTokenId) !== tokenId || isMinting}
+          onClick={handleMint}
           className={`w-full py-3 rounded-lg font-bold text-sm transition-all duration-300 ${
             Number(nextTokenId) !== tokenId
               ? isOwned
@@ -69,7 +82,11 @@ const NFTCard = ({ metadata, mintPrice, tokenId, nextTokenId, mintNFT }) => {
               : "bg-gradient-to-r from-[#6e4aff] to-[#399EEA] text-white hover:shadow-lg hover:shadow-[#399EEA]/20"
           }`}
         >
-          {isOwned ? "OWNED" : "MINT NFT"}
+          {isOwned 
+            ? "OWNED" 
+            : isMinting 
+              ? "MINTING..." 
+              : "MINT NFT"}
         </button>
       </div>
 
