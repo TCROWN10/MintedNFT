@@ -2,6 +2,7 @@ import { Contract } from "ethers";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getReadOnlyProvider } from "../utils";
 import NFT_ABI from "../ABI/nft.json";
+import { useAccount } from "wagmi";
 
 const appContext = createContext();
 
@@ -15,11 +16,13 @@ export const useAppContext = () => {
 };
 
 export const AppProvider = ({ children }) => {
+    const {address: userAddress, isConnected} = useAccount();
     const [nextTokenId, setNextTokenId] = useState(null);
     const [maxSupply, setMaxSupply] = useState(null);
     const [baseTokenURI, setBaseTokenURI] = useState("");
     const [tokenMetaData, setTokenMetaData] = useState(new Map());
     const [mintPrice, setMintPrice] = useState(null);
+    const [userNFTs, setUserNFTs] = useState([]);
 
     useEffect(() => {
         const contract = new Contract(
@@ -65,6 +68,7 @@ export const AppProvider = ({ children }) => {
                 });
         });
 
+       
         Promise.all(promises)
             .then((responses) => {
                 const tokenMetaData = new Map();
@@ -76,6 +80,56 @@ export const AppProvider = ({ children }) => {
             .catch((error) => console.error("error: ", error));
     }, [baseTokenURI, maxSupply]);
 
+    useEffect(()=>{
+        const contract = new Contract(
+            import.meta.env.VITE_NFT_CONTRACT_ADDRESS,
+            NFT_ABI,
+            getReadOnlyProvider()
+        );
+        
+
+            const switchMintButton = (Minter, NftId) =>{
+                console.log(`The button has switched, The minter is ${Minter} and the NFT is ${NftId}`)
+            }
+
+            contract.on("Minted", switchMintButton)
+
+            contract
+            .nextTokenId()
+            .then((id) => setNextTokenId(id))
+            .catch((error) => console.error("error: ", error));
+
+         return () =>{
+            contract.off("Minted" , switchMintButton)
+         }
+    }, []);
+    useEffect(() => {
+        if (!userAddress || !isConnected || nextTokenId === null)
+            return;
+        fetchUserNFTs();
+    }, [userAddress, isConnected , nextTokenId]);
+
+    const fetchUserNFTs = async () => {
+        try{
+            const contract = new Contract(
+                import.meta.env.VITE_NFT_CONTRACT_ADDRESS,
+                NFT_ABI,
+                getReadOnlyProvider()
+            );
+            const userGetNFTs =[];
+            for (let i = 0; i < nextTokenId; i++) {
+                const owner = await contract.ownerOf(i);
+                if (owner.toLowerCase() === userAddress.toLocaleLowerCase()
+                ) {
+                    userGetNFTs.push(i);
+                }
+            }
+            setUserNFTs(userGetNFTs);
+        } catch (error) {
+            console.error("Error fetching user NFTs: error");
+        }
+    };
+
     return (
         <appContext.Provider
             value={{
@@ -84,6 +138,7 @@ export const AppProvider = ({ children }) => {
                 baseTokenURI,
                 tokenMetaData,
                 mintPrice,
+                userNFTs,
             }}
         >
             {children}

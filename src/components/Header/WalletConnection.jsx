@@ -5,10 +5,12 @@ import { shortenAddress } from "../../utils";
 import { Flex, Popover } from "@radix-ui/themes";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { supportedNetworks } from "../../config/wallet-connection/wagmi";
+import { useNavigate } from "react-router-dom";
 
 const WalletConnection = () => {
     const account = useAccount();
     const { disconnect } = useDisconnect();
+    const navigate = useNavigate();
 
     if (!account.address) {
         return <WalletModal />;
@@ -43,6 +45,10 @@ const WalletConnection = () => {
                 <button className="w-full flex gap-4 items-center p-4 text-primary rounded-md">
                     <Icon icon="solar:copy-line-duotone" className="w-6 h-6" />
                     <span>Copy</span>
+                </button>
+                <button className="w-full flex gap-4 items-center p-4 text-primary rounded-md" onClick={() => navigate("/account")}>
+                <Icon icon="famicons:wallet" className="w-6 h-6" />
+                <span>Account</span>
                 </button>
                 <button
                     onClick={disconnect}

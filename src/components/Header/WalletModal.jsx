@@ -26,7 +26,6 @@ const WalletModal = () => {
             setPendingConnectorUID(null);
         }
     };
-
     return (
         <Dialog.Root>
             <Dialog.Trigger>
@@ -34,12 +33,10 @@ const WalletModal = () => {
                     Connect Wallet
                 </button>
             </Dialog.Trigger>
-
             <Dialog.Content maxWidth="450px">
                 <Dialog.Title className="text-primary">
                     Available Wallets
                 </Dialog.Title>
-
                 <Flex direction="column" gap="3">
                     {walletConnectConnector && (
                         <button
